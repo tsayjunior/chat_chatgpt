@@ -7,12 +7,18 @@
         <small>sent by {{ message.user }} at {{ message.timestamp }}</small>
       </div>
     </div>
-    <input type="text" v-model="newMessage" @keyup.enter="sendMessage" placeholder="Type your message...">
+    <input
+      type="text"
+      v-model="newMessage"
+      @keyup.enter="sendMessage"
+      placeholder="Type your message..."
+    />
   </div>
 </template>
 
 <script>
-import { defineComponent } from 'vue';
+import { defineComponent } from 'vue'
+import axios from 'axios'
 
 export default defineComponent({
   name: 'chat_gpt',
@@ -21,17 +27,29 @@ export default defineComponent({
       messages: [
         { text: 'Hello!', user: 'User 1', timestamp: '2022-03-27 10:30:00' },
         { text: 'Hi there!', user: 'User 2', timestamp: '2022-03-27 10:31:00' },
-        { text: 'How are you?', user: 'User 1', timestamp: '2022-03-27 10:32:00' },
+        { text: 'How are you?', user: 'User 1', timestamp: '2022-03-27 10:32:00' }
       ],
-      newMessage: '',
-    };
+      newMessage: ''
+    }
   },
   methods: {
     sendMessage() {
-      const timestamp = new Date().toISOString();
-      this.messages.push({ text: this.newMessage, user: this.currentUser, timestamp });
-      this.newMessage = '';
-    },
-  },
-});
+      const timestamp = new Date().toISOString()
+      console.log('entra y funciona jjj', this.newMessage)
+      this.messages.push({ text: this.newMessage, user: this.currentUser, timestamp })
+      axios
+        .post('http://127.0.0.1:8000/api/chatbot', {text: this.newMessage})
+        .then((response) => {
+          console.log(response.data)
+        })
+        .catch((error) => {
+          console.log(error)
+          console.log(error.message)
+
+        })
+      this.newMessage = ''
+
+    }
+  }
+})
 </script>
